@@ -8,14 +8,14 @@ class DatabaseHelper {
   static final _databaseName = "EmployeeDatabase.db";
   static final _databaseVersion = 1;
 
-  static final table = 'emp_table';
-
+  static final table = 'product_table';
+  static final id = 'id';
   static final productId = 'productId';
   static final columnName = 'productName';
   static final productPrice = 'productPrice';
-  static final productTotalPrice = 'productTotalPrice';
+  static final productInitialPrice = 'productInitialPrice';
 
-   static final productImage = 'productImage';
+  static final productImage = 'productImage';
   static final productQuntity = 'productQuntity';
   static final productTag = 'productTag';
 
@@ -40,10 +40,11 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
           CREATE TABLE $table (
-            $productId INTEGER PRIMARY KEY,
+              $id INTEGER PRIMARY KEY,
+            $productId INTERGER UNIQUE,
             $columnName TEXT ,
             $productPrice TEXT ,
-            $productTotalPrice TEXT ,
+            $productInitialPrice TEXT ,
             $productImage TEXT ,
             $productQuntity TEXT ,
             $productTag TEXT 
@@ -70,12 +71,12 @@ class DatabaseHelper {
 
   Future<int> update(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    int id = row[productId];
-    return await db.update(table, row, where: '$productId = ?', whereArgs: [id]);
+    // int id = row[productId];
+    return await db.update(table, row, where: '$id = ?', whereArgs: [id]);
   }
 
   Future<int> delete(int id) async {
     Database db = await instance.database;
-    return await db.delete(table, where: '$productId = ?', whereArgs: [id]);
+    return await db.delete(table, where: '$id = ?', whereArgs: [id]);
   }
 }

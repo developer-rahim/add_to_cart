@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Database/db_helper.dart';
 import 'package:flutter_application_1/Provider/cart_counter.dart';
@@ -48,14 +49,17 @@ class EmployeesListState extends State<EmployeesList> {
 
     return SafeArea(
       child: Scaffold(
-        bottomNavigationBar: BottomAppBar(
-          child: Container(
-            color: Colors.black.withOpacity(.2),
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Total amount Tk ${cartCounter.totalPrice}',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        bottomNavigationBar: Visibility(
+          visible: cartCounter.totalPrice == 0.0 ? false : true,
+          child: BottomAppBar(
+            child: Container(
+              color: Colors.black.withOpacity(.2),
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  'Total amount Tk ${cartCounter.totalPrice}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ),
@@ -66,14 +70,31 @@ class EmployeesListState extends State<EmployeesList> {
               //  listEmployees.length.toString()
               ),
           centerTitle: true,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.favorite),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => AddEditEmployee(false)));
-              },
-            )
+          actions: [
+            Container(
+              margin: EdgeInsets.only(right: 20),
+              child: Center(
+                  child: Badge(
+                badgeContent:
+                    Consumer<CartCounter>(builder: ((context, value, child) {
+                  return Text(
+                    cartCounter.counter.toString(),
+                    // value.getCounter().toString(),
+                    style: TextStyle(color: Colors.white),
+                  );
+                })),
+
+                // animationDuration: Duration(milliseconds: 300),
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => EmployeesList())));
+                    },
+                    child: Icon(Icons.shopping_bag_outlined)),
+              )),
+            ),
           ],
         ),
         body: listEmployees.length == 0
@@ -85,12 +106,17 @@ class EmployeesListState extends State<EmployeesList> {
                     // reverse: true,
                     itemBuilder: (context, position) {
                       Employee product_list = listEmployees[position];
+                      var id = product_list.id;
+                      var productName = product_list.productName;
                       int productPrice = int.parse(product_list.productPrice!);
+                      int productInitialPrice = int.parse(
+                          product_list.productInitialPrice.toString());
                       var productTag = product_list.productTag;
-                      int productquantity =
+                      int productQuntity =
                           int.parse(product_list.productQuntity!);
                       var productImage = product_list.productImage;
                       var productId = product_list.productId;
+
                       return Card(
                         elevation: 8,
                         child: Container(
@@ -159,39 +185,38 @@ class EmployeesListState extends State<EmployeesList> {
                                         children: [
                                           GestureDetector(
                                             onTap: () {
-                                              int product_price = productPrice;
-                                              int product_quntity =
-                                                  productquantity;
-                                              if (productquantity == 1) {
-                                                productquantity--;
-                                              }
+                                              int productQuntitys =
+                                                  productQuntity;
+                                              int productInitialPrices =
+                                                  productInitialPrice;
+                                              productQuntitys++;
+                                              int newPrice =
+                                                  productInitialPrices *
+                                                      productInitialPrices;
 
-                                              var newprice = product_quntity *
-                                                  product_price;
-                                              //  var newPrice=product_quntity * product_price;
-                                              // print('product_price $product_price');
-                                              print(
-                                                  'product_quantity $product_quntity');
-                                              print(
-                                                  'product_newprice $newprice');
+                                              int product_price = productPrice;
+
                                               Employee addEmployee = Employee(
-                                                  productId: productId,
-                                                  productImage: productImage,
-                                                  productName:
-                                                      product_list.productName,
-                                                  productPrice:
-                                                      newprice.toString(),
-                                                  productQuntity:
-                                                      product_quntity
-                                                          .toString(),
-                                                  productTag: productTag);
+                                                id: id,
+                                                productId: productId,
+                                                productImage: productImage,
+                                                productName:
+                                                    product_list.productName,
+                                                productTag: productTag,
+                                                productQuntity:
+                                                    productQuntitys.toString(),
+                                                productPrice:
+                                                    newPrice.toString(),
+                                                productInitialPrice:
+                                                    productInitialPrice
+                                                        .toString(),
+                                              );
                                               DatabaseHelper.instance
                                                   .update(addEmployee.toMap())
                                                   .then((value) {
-                                                newprice = 0;
-                                                product_quntity = 0;
-
-                                                cartCounter.removeTotalPrice(
+                                                newPrice = 0;
+                                                productQuntitys = 0;
+                                                cartCounter.addTotalPrice(
                                                     double.parse(product_price
                                                         .toString()));
                                               }).onError((error, stackTrace) {
@@ -221,43 +246,29 @@ class EmployeesListState extends State<EmployeesList> {
                                                       BorderRadius.circular(
                                                           50)),
                                               child: Text(
-                                                  productquantity.toString())),
+                                                  productQuntity.toString()
+                                                  //  productquantity.toString()
+
+                                                  )),
                                           SizedBox(
                                             width: 10,
                                           ),
                                           GestureDetector(
                                             onTap: () {
                                               int product_price = productPrice;
-                                              int product_quntity =
-                                                  productquantity;
 
-                                              productquantity++;
-
-                                              var newprice = product_quntity *
-                                                  product_price;
                                               //  var newPrice=product_quntity * product_price;
                                               // print('product_price $product_price');
-                                              print(
-                                                  'product_quantity $product_quntity');
-                                              print(
-                                                  'product_newprice $newprice');
+
                                               Employee addEmployee = Employee(
                                                   productId: productId,
                                                   productImage: productImage,
                                                   productName:
                                                       product_list.productName,
-                                                  productPrice:
-                                                      newprice.toString(),
-                                                  productQuntity:
-                                                      product_quntity
-                                                          .toString(),
                                                   productTag: productTag);
                                               DatabaseHelper.instance
                                                   .update(addEmployee.toMap())
                                                   .then((value) {
-                                                newprice = 0;
-                                                product_quntity = 0;
-
                                                 cartCounter.addTotalPrice(
                                                     double.parse(product_price
                                                         .toString()));

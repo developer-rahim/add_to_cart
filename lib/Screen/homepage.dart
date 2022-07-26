@@ -24,7 +24,7 @@ class AddEditEmployee extends StatefulWidget {
 }
 
 class AddEditEmployeeState extends State<AddEditEmployee> {
-  List<String> productName = [
+  List<String> productNames = [
     'Mango',
     'Banana',
     'Tomoto',
@@ -33,7 +33,7 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
     'Liche',
     'Pototo'
   ];
-  List<String> productUnit = [
+  List<String> productUnitTag = [
     'KG',
     'DORZEN',
     'KG',
@@ -136,15 +136,16 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
               children: [
                 Container(
                   child: ListView.builder(
-                      itemCount: productName.length,
+                      itemCount: productNames.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        var nameindex = productName[index];
-                        var unitindex = productUnit[index];
-                        var priceindex = productPRICE[index];
-                        var imageurl = productmageUrl[index];
-                        var productquantity=productQuantity[index];
+                        var productName = productNames[index];
+                       
+                        var productPrice = productPRICE[index];
+                        var productImage = productmageUrl[index];
+                        var productTag = productUnitTag[index];
+                    
 
                         return Card(
                           child: ListTile(
@@ -153,12 +154,12 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
                                 height: 80,
                                 width: 80,
                                 child: Image.network(
-                                  imageurl,
+                                  productImage,
                                   fit: BoxFit.fill,
                                 ),
                               ),
                               title: Text(
-                                nameindex,
+                                productName,
                                 style: TextStyle(fontSize: 15),
                               ),
                               subtitle: Container(
@@ -166,14 +167,14 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      priceindex.toString(),
+                                      productPrice.toString(),
                                       style: TextStyle(fontSize: 13),
                                     ),
                                     SizedBox(
                                       width: 10,
                                     ),
                                     Text(
-                                      unitindex.toString(),
+                                      productTag.toString(),
                                       style: TextStyle(fontSize: 13),
                                     )
                                   ],
@@ -190,36 +191,30 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
                                       // cartCounter.addCounter();
 
                                       //  cartCounter.productTotalPrice(productPRICE[index]);
-                                      Employee addEmployee =  Employee(
+                                      Employee addEmployee = Employee(
+                                          id: index,
                                           productId: index,
-                                          productImage: imageurl,
-                                          productName: productName[index],
-                                          productPrice:
-                                              productPRICE[index].toString(),
-                                          productQuntity:productquantity
-                                             ,
-                                         // productTag: unitindex
-                                         );
+                                          productImage: productImage,
+                                          productName: productName,
+                                          productPrice: productPrice.toString(),
+                                          productInitialPrice:
+                                              productPrice.toString(),
+                                          productQuntity: 1.toString(),
+                                          productTag: productTag.toString());
                                       DatabaseHelper.instance
                                           .insert(addEmployee.toMap())
-                                          .then((value) => {
-                                                cartCounter.incrementCounter(),
-                                                cartCounter.addTotalPrice(
-                                                    double.parse(
-                                                        productPRICE[index]
-                                                            .toString())),
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                  content:  Text(
-                                                      'Added Successfully'),
-                                                  duration:  Duration(
-                                                      seconds: 1),
-                                                ))
-                                              })
-                                          .onError((error, stackTrace) => {
-                                                // ignore: avoid_print
-                                                //  return e.toString();
-                                              });
+                                          .then((value) {
+                                        cartCounter.incrementCounter();
+                                        cartCounter.addTotalPrice(double.parse(
+                                            productPrice.toString()));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text('Added Successfully'),
+                                          duration: Duration(seconds: 1),
+                                        ));
+                                      }).onError((error, stackTrace) {
+                                        print(error.toString());
+                                      });
                                     }),
                               ])),
                         );
