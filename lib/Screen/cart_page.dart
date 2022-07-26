@@ -15,9 +15,10 @@ class EmployeesList extends StatefulWidget {
 }
 
 class EmployeesListState extends State<EmployeesList> {
+  //var productQuntity = 1;
   List<Employee> listEmployees = [];
 
-  Future<List<Map<String, dynamic>>> getEmployees() async {
+  Future<List<Map<String, dynamic>>> product_lists() async {
     List<Map<String, dynamic>> listMap =
         await DatabaseHelper.instance.queryAllRows();
     setState(() {
@@ -33,7 +34,7 @@ class EmployeesListState extends State<EmployeesList> {
     print(cartCounter.totalPrice);
     // TODO: implement initState
 
-    getEmployees();
+    product_lists();
     super.initState();
   }
 
@@ -48,84 +49,243 @@ class EmployeesListState extends State<EmployeesList> {
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: BottomAppBar(
-          child: Padding(
-            padding: const EdgeInsets.all(28.0),
-            child: Text('Total amount Tk ${cartCounter.totalPrice}'),
+          child: Container(
+            color: Colors.black.withOpacity(.2),
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'Total amount Tk ${cartCounter.totalPrice}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
           ),
         ),
         appBar: AppBar(
-          title: Text(listEmployees.length.toString()), centerTitle: true,
-          // actions: <Widget>[
-          //   IconButton(
-          //     icon: Icon(Icons.add),
-          //     onPressed: () {
-          //       Navigator.push(context,
-          //           MaterialPageRoute(builder: (_) => AddEditEmployee(false)));
-          //     },
-          //   )
-          // ],
+          backgroundColor: Color.fromARGB(255, 113, 174, 225),
+          title: Text('Cart Page'
+              //  listEmployees.length.toString()
+              ),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.favorite),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => AddEditEmployee(false)));
+              },
+            )
+          ],
         ),
         body: listEmployees.length == 0
             ? Center(child: Text('No Data add in Cart'))
             : Container(
-                padding: EdgeInsets.all(15),
+                // padding: EdgeInsets.all(15),
                 child: ListView.builder(
                     itemCount: listEmployees.length,
                     // reverse: true,
                     itemBuilder: (context, position) {
-                      Employee getEmployee = listEmployees[position];
-                      int productPrice = int.parse(getEmployee.productPrice!);
-                      var age = getEmployee.productTag;
-                      var productquantyti = getEmployee.productQuntity;
+                      Employee product_list = listEmployees[position];
+                      int productPrice = int.parse(product_list.productPrice!);
+                      var productTag = product_list.productTag;
+                      int productquantity =
+                          int.parse(product_list.productQuntity!);
+                      var productImage = product_list.productImage;
+                      var productId = product_list.productId;
                       return Card(
                         elevation: 8,
                         child: Container(
-                          height: 80,
-                          padding: EdgeInsets.all(15),
-                          child: Stack(
-                            children: <Widget>[
-                              Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(getEmployee.productName!,
-                                      style: TextStyle(fontSize: 18))),
-                              // Align(
-                              //   alignment: Alignment.centerRight,
-                              //   child: Container(
-                              //     margin: EdgeInsets.only(right: 45),
-                              //     child: IconButton(
-                              //         icon: Icon(Icons.edit),
-                              //         onPressed: () {
-                              //           Navigator.push(
-                              //               context,
-                              //               MaterialPageRoute(
-                              //                   builder: (_) => AddEditEmployee(
-                              //                       true, getEmployee)));
-                              //         }),
-                              //   ),
-                              // ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      cartCounter.removeTotalPrice(
-                                          productPrice.toDouble());
-
-                                      // cartCounter.removeProductTotalPrice(productPrice);
-                                      cartCounter.decrementCounter();
-                                      DatabaseHelper.instance
-                                          .delete(getEmployee.productId!);
-                                      setState(() => {
-                                            listEmployees.removeWhere((item) =>
-                                                item.productId ==
-                                                getEmployee.productId)
-                                          });
-                                    }),
+                          // height: 97,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 100,
+                                child: Image(
+                                  image: NetworkImage(
+                                    productImage.toString(),
+                                  ),
+                                  fit: BoxFit.fill,
+                                ),
                               ),
-                              Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Text("Price: $productPrice Tk |  $age",
-                                      style: TextStyle(fontSize: 15))),
+                              Container(
+                                width: 160,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(product_list.productName!,
+                                        style: TextStyle(fontSize: 18)),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text("Price: $productPrice Tk ",
+                                        style: TextStyle(fontSize: 15)),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                child: Column(
+                                  //  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      child: IconButton(
+                                          icon: Icon(
+                                            Icons.delete,
+                                            color: Colors.redAccent,
+                                          ),
+                                          onPressed: () {
+                                            cartCounter.removeTotalPrice(
+                                                productPrice.toDouble());
+
+                                            // cartCounter.removeProductTotalPrice(productPrice);
+                                            cartCounter.decrementCounter();
+                                            DatabaseHelper.instance.delete(
+                                                product_list.productId!);
+                                            setState(() => {
+                                                  listEmployees.removeWhere(
+                                                      (item) =>
+                                                          item.productId ==
+                                                          product_list
+                                                              .productId)
+                                                });
+                                          }),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              int product_price = productPrice;
+                                              int product_quntity =
+                                                  productquantity;
+                                              if (productquantity == 1) {
+                                                productquantity--;
+                                              }
+
+                                              var newprice = product_quntity *
+                                                  product_price;
+                                              //  var newPrice=product_quntity * product_price;
+                                              // print('product_price $product_price');
+                                              print(
+                                                  'product_quantity $product_quntity');
+                                              print(
+                                                  'product_newprice $newprice');
+                                              Employee addEmployee = Employee(
+                                                  productId: productId,
+                                                  productImage: productImage,
+                                                  productName:
+                                                      product_list.productName,
+                                                  productPrice:
+                                                      newprice.toString(),
+                                                  productQuntity:
+                                                      product_quntity
+                                                          .toString(),
+                                                  productTag: productTag);
+                                              DatabaseHelper.instance
+                                                  .update(addEmployee.toMap())
+                                                  .then((value) {
+                                                newprice = 0;
+                                                product_quntity = 0;
+
+                                                cartCounter.removeTotalPrice(
+                                                    double.parse(product_price
+                                                        .toString()));
+                                              }).onError((error, stackTrace) {
+                                                print(error.toString());
+                                              });
+                                            },
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.black
+                                                        .withOpacity(.2),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50)),
+                                                child: Icon(
+                                                  Icons.remove,
+                                                  size: 19,
+                                                )),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Container(
+                                              padding: EdgeInsets.all(3),
+                                              decoration: BoxDecoration(
+                                                  // color: Colors.blueAccent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                              child: Text(
+                                                  productquantity.toString())),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              int product_price = productPrice;
+                                              int product_quntity =
+                                                  productquantity;
+
+                                              productquantity++;
+
+                                              var newprice = product_quntity *
+                                                  product_price;
+                                              //  var newPrice=product_quntity * product_price;
+                                              // print('product_price $product_price');
+                                              print(
+                                                  'product_quantity $product_quntity');
+                                              print(
+                                                  'product_newprice $newprice');
+                                              Employee addEmployee = Employee(
+                                                  productId: productId,
+                                                  productImage: productImage,
+                                                  productName:
+                                                      product_list.productName,
+                                                  productPrice:
+                                                      newprice.toString(),
+                                                  productQuntity:
+                                                      product_quntity
+                                                          .toString(),
+                                                  productTag: productTag);
+                                              DatabaseHelper.instance
+                                                  .update(addEmployee.toMap())
+                                                  .then((value) {
+                                                newprice = 0;
+                                                product_quntity = 0;
+
+                                                cartCounter.addTotalPrice(
+                                                    double.parse(product_price
+                                                        .toString()));
+                                              }).onError((error, stackTrace) {
+                                                print(error.toString());
+                                              });
+                                            },
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.black
+                                                        .withOpacity(.2),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50)),
+                                                child: Icon(
+                                                  Icons.add,
+                                                  size: 19,
+                                                )),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
