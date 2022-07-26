@@ -9,6 +9,8 @@ class CartCounter extends ChangeNotifier {
   int get counter => _counter;
   double _totalPrice = 00.00;
   double get totalPrice => _totalPrice;
+  // int _quantity = 1;
+  // int get quantity => _quantity;
 
   incrementCounter() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -35,6 +37,31 @@ class CartCounter extends ChangeNotifier {
     notifyListeners();
   }
 
+  // quantityincrementCounter() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  //   _quantity = ((prefs.getInt('quantity') ?? 0) + 1);
+
+  //   prefs.setInt('quantity', _quantity);
+  //   notifyListeners();
+  // }
+
+  // quantitydecrementCounter() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   if (_quantity != 1) {
+  //     _quantity = ((prefs.getInt('quantity') ?? 0) - 1);
+  //     prefs.setInt('quantity', _quantity);
+  //   }
+  //   notifyListeners();
+  // }
+
+  // quantityloadCounter() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  //   _quantity = (prefs.getInt('quantity') ?? 0);
+  //   notifyListeners();
+  // }
+
   void _setPrefItem() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -42,9 +69,7 @@ class CartCounter extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _getPrefItem() async {
-  
-  }
+  void _getPrefItem() async {}
 
   void addTotalPrice(double productPrice) {
     _totalPrice = _totalPrice + productPrice;
@@ -58,10 +83,10 @@ class CartCounter extends ChangeNotifier {
     notifyListeners();
   }
 
-   getTotalPrice()async {
-     SharedPreferences prefs = await SharedPreferences.getInstance();
+  getTotalPrice() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-   _totalPrice= await prefs.getDouble(
+    _totalPrice = await prefs.getDouble(
           'cart_items',
         ) ??
         00.00;

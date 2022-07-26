@@ -42,14 +42,15 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
     'PUYA',
     'MON'
   ];
-  List<int> productPRICE = [11, 22, 33, 33, 44, 55, 55];
+  List<int> productPRICE = [10, 20, 30, 40, 50, 60, 70];
+  List<String> productQuantity = ['1', '1', '1', '1', '1', '1', '1'];
   List<String> productmageUrl = [
+    'https://media.istockphoto.com/photos/mango-picture-id467328250?k=20&m=467328250&s=612x612&w=0&h=b21g4jLnkNRkcOX84X_Vn-z1gHnLW1n3RXK8bKV692s=',
+    'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80g',
+    'https://image.shutterstock.com/image-photo/bunch-bananas-isolated-on-white-260nw-1297537468.jpg',
     'https://thumbs.dreamstime.com/b/environment-earth-day-hands-trees-growing-seedlings-bokeh-green-background-female-hand-holding-tree-nature-field-gra-130247647.jpg',
-    'https://tinypng.com/images/social/website.jpg',
-    'https://static.addtoany.com/images/dracaena-cinnabari.jpg',
-    'https://thumbs.dreamstime.com/b/environment-earth-day-hands-trees-growing-seedlings-bokeh-green-background-female-hand-holding-tree-nature-field-gra-130247647.jpg',
-    'https://tinypng.com/images/social/website.jpg',
-    'https://static.addtoany.com/images/dracaena-cinnabari.jpg',
+    'https://media.istockphoto.com/photos/tomatoes-isolate-on-white-background-tomato-half-isolated-tomatoes-picture-id1258142863?k=20&m=1258142863&s=612x612&w=0&h=lVLMaX3tiP407SwLUElEifKqHpNRYw4ZR6B0GOycGc4=',
+    'https://thumbs.dreamstime.com/b/big-watermelon-slice-white-background-as-package-design-element-44517200.jpg',
     'https://static.addtoany.com/images/dracaena-cinnabari.jpg',
   ];
 
@@ -86,6 +87,7 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
     // loadCounter();
     CartCounter cartCounter = Provider.of<CartCounter>(context, listen: false);
     cartCounter.loadCounter();
+    // cartCounter.  quantityloadCounter();
     // getEmployees();
     // TODO: implement initState
     super.initState();
@@ -98,7 +100,7 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
     );
     return SafeArea(
         child: Scaffold(
-            backgroundColor: Colors.grey[800],
+            // backgroundColor: Colors.grey[800],
             appBar: AppBar(
               backgroundColor: Colors.grey[900],
               title: Text('Product List'),
@@ -142,6 +144,7 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
                         var unitindex = productUnit[index];
                         var priceindex = productPRICE[index];
                         var imageurl = productmageUrl[index];
+                        var productquantity=productQuantity[index];
 
                         return Card(
                           child: ListTile(
@@ -166,7 +169,6 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
                                       priceindex.toString(),
                                       style: TextStyle(fontSize: 13),
                                     ),
-                                   
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -179,34 +181,38 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
                               ),
                               trailing: Wrap(children: [
                                 RaisedButton(
-                                    color: Colors.grey,
+                                    //color: Colors.grey,
+                                    color: Colors.black.withOpacity(.2),
                                     child: Text("Add Cart",
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 14)),
                                     onPressed: () {
                                       // cartCounter.addCounter();
-                                     
-                                  //  cartCounter.productTotalPrice(productPRICE[index]);
-                                      Employee addEmployee = new Employee(
-                                       productId: index,
-                                       
+
+                                      //  cartCounter.productTotalPrice(productPRICE[index]);
+                                      Employee addEmployee =  Employee(
+                                          productId: index,
+                                          productImage: imageurl,
                                           productName: productName[index],
                                           productPrice:
                                               productPRICE[index].toString(),
-                                          productQuntity: productUnit[index],
-                                          productTag: unitindex);
+                                          productQuntity:productquantity
+                                             ,
+                                         // productTag: unitindex
+                                         );
                                       DatabaseHelper.instance
                                           .insert(addEmployee.toMap())
-                                          .then((value) => { cartCounter.incrementCounter(),
+                                          .then((value) => {
+                                                cartCounter.incrementCounter(),
                                                 cartCounter.addTotalPrice(
                                                     double.parse(
                                                         productPRICE[index]
                                                             .toString())),
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(SnackBar(
-                                                  content: const Text(
+                                                  content:  Text(
                                                       'Added Successfully'),
-                                                  duration: const Duration(
+                                                  duration:  Duration(
                                                       seconds: 1),
                                                 ))
                                               })
@@ -219,13 +225,13 @@ class AddEditEmployeeState extends State<AddEditEmployee> {
                         );
                       }),
                 ),
-                IconButton(
-                    onPressed: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      prefs.remove('counter');
-                    },
-                    icon: Icon(Icons.delete))
+                // IconButton(
+                //     onPressed: () async {
+                //       SharedPreferences prefs =
+                //           await SharedPreferences.getInstance();
+                //       prefs.remove('counter');
+                //     },
+                //     icon: Icon(Icons.delete))
               ],
             )));
   }
